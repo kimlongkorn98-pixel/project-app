@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../data/mock_data.dart';
 import '../providers/app_state.dart';
+import '../widgets/auto_horizontal_product_list.dart';
 import '../widgets/category_selector.dart';
 import '../widgets/custom_search_bar.dart';
 import '../widgets/product_card.dart';
+import '../widgets/product_scan_dialog.dart';
 import '../widgets/promo_carousel.dart';
 import 'product_detail_screen.dart';
 
@@ -105,7 +107,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              // Search Bar
+              // Search Bar with Scan Icon
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: CustomSearchBar(
@@ -115,7 +117,7 @@ class HomeScreen extends StatelessWidget {
                       onNavigateToShop();
                     }
                   },
-                  onFilterTap: onNavigateToShop,
+                  onScanTap: () => ProductScanDialog.show(context, state),
                 ),
               ),
               const SizedBox(height: 16),
@@ -186,47 +188,10 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // Flash Deals Horizontal List
-              SizedBox(
-                height: 250,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: flashSaleProducts.length,
-                  separatorBuilder: (context, index) => const SizedBox(width: 14),
-                  itemBuilder: (context, index) {
-                    final product = flashSaleProducts[index];
-                    return SizedBox(
-                      width: 170,
-                      child: ProductCard(
-                        product: product,
-                        isWishlisted: state.isWishlisted(product.id),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductDetailScreen(
-                                product: product,
-                                state: state,
-                              ),
-                            ),
-                          );
-                        },
-                        onFavoriteTap: () => state.toggleWishlist(product.id),
-                        onAddToCartTap: () {
-                          state.addToCart(product);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Added ${product.name} to cart!'),
-                              backgroundColor: const Color(0xFF6C5CE7),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
+              // Flash Deals Auto Horizontal List
+              AutoHorizontalProductList(
+                products: flashSaleProducts,
+                state: state,
               ),
               const SizedBox(height: 28),
 

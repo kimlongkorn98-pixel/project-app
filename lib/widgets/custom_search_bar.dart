@@ -4,12 +4,14 @@ class CustomSearchBar extends StatelessWidget {
   final String hintText;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onFilterTap;
+  final VoidCallback? onScanTap;
 
   const CustomSearchBar({
     super.key,
     this.hintText = 'Search products, brands...',
     this.onChanged,
     this.onFilterTap,
+    this.onScanTap,
   });
 
   @override
@@ -45,34 +47,36 @@ class CustomSearchBar extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 12),
-        InkWell(
-          onTap: onFilterTap,
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF6C5CE7), Color(0xFFA29BFE)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+        if (onScanTap != null) ...[
+          const SizedBox(width: 12),
+          InkWell(
+            onTap: onScanTap,
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6C5CE7), Color(0xFFA29BFE)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: const Icon(
-              Icons.tune_rounded,
-              color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF6C5CE7).withValues(alpha: 0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.qr_code_scanner_rounded,
+                color: Colors.white,
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }

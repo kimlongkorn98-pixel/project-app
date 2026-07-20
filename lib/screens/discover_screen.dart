@@ -4,6 +4,7 @@ import '../providers/app_state.dart';
 import '../widgets/category_selector.dart';
 import '../widgets/custom_search_bar.dart';
 import '../widgets/product_card.dart';
+import '../widgets/product_scan_dialog.dart';
 import 'product_detail_screen.dart';
 
 class DiscoverScreen extends StatelessWidget {
@@ -25,12 +26,13 @@ class DiscoverScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Search Input
+            // Search Input with Scan Icon
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 12),
               child: CustomSearchBar(
                 hintText: 'Search electronics, fashion, shoes...',
                 onChanged: (val) => state.setSearchQuery(val),
+                onScanTap: () => ProductScanDialog.show(context, state),
               ),
             ),
 
