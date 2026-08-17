@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomSearchBar extends StatelessWidget {
+class CustomSearchBar extends StatefulWidget {
   final String hintText;
   final ValueChanged<String>? onChanged;
   final VoidCallback? onFilterTap;
@@ -13,6 +13,35 @@ class CustomSearchBar extends StatelessWidget {
     this.onFilterTap,
     this.onScanTap,
   });
+
+  @override
+  State<CustomSearchBar> createState() => _CustomSearchBarState();
+}
+
+class _CustomSearchBarState extends State<CustomSearchBar> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+    _controller.addListener(_updateClearButton);
+  }
+
+  void _updateClearButton() => setState(() {});
+
+  void _clearSearch() {
+    _controller.clear();
+    widget.onChanged?.call('');
+  }
+
+  @override
+  void dispose() {
+    _controller
+      ..removeListener(_updateClearButton)
+      ..dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,32 +61,53 @@ class CustomSearchBar extends StatelessWidget {
                 ],
               ),
               child: TextField(
-                onChanged: onChanged,
+                controller: _controller,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.search,
+                autocorrect: true,
+                enableSuggestions: true,
+                stylusHandwritingEnabled: false,
+                onChanged: widget.onChanged,
                 style: const TextStyle(fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: hintText,
+                  hintText: widget.hintText,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF6C5CE7),
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF6C5CE7),
+                      width: 2,
+                    ),
+                  ),
                   prefixIcon: const Icon(
                     Icons.search_rounded,
                     color: Color(0xFF6C5CE7),
                     size: 22,
                   ),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.clear_rounded, size: 18),
-                    onPressed: () {
-                      onChanged?.call('');
-                    },
-                  ),
+                  suffixIcon: _controller.text.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: const Icon(Icons.clear_rounded, size: 18),
+                          tooltip: 'Clear search',
+                          onPressed: _clearSearch,
+                        ),
                 ),
               ),
             ),
           ),
-          if (onScanTap != null) ...[
+          if (widget.onScanTap != null) ...[
             const SizedBox(width: 12),
             Material(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(16),
               child: InkWell(
-                onTap: onScanTap,
+                onTap: widget.onScanTap,
                 borderRadius: BorderRadius.circular(16),
                 child: Container(
                   width: 52,

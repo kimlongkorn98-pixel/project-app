@@ -7,11 +7,7 @@ class CartScreen extends StatefulWidget {
   final AppState state;
   final VoidCallback onShopNow;
 
-  const CartScreen({
-    super.key,
-    required this.state,
-    required this.onShopNow,
-  });
+  const CartScreen({super.key, required this.state, required this.onShopNow});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -63,7 +59,9 @@ class _CartScreenState extends State<CartScreen> {
                       Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF6C5CE7).withValues(alpha: 0.12),
+                          color: const Color(
+                            0xFF6C5CE7,
+                          ).withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -143,11 +141,13 @@ class _CartScreenState extends State<CartScreen> {
                                 child: TextField(
                                   controller: _promoController,
                                   decoration: const InputDecoration(
-                                    hintText: 'Enter Promo Code (e.g. SUMMER50)',
+                                    hintText:
+                                        'Enter Promo Code (e.g. SUMMER50)',
                                     hintStyle: TextStyle(fontSize: 13),
                                     fillColor: Colors.transparent,
-                                    contentPadding:
-                                        EdgeInsets.symmetric(horizontal: 14),
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                    ),
                                     border: InputBorder.none,
                                     enabledBorder: InputBorder.none,
                                     focusedBorder: InputBorder.none,
@@ -160,9 +160,11 @@ class _CartScreenState extends State<CartScreen> {
                                   final success = state.applyPromoCode(code);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(success
-                                          ? 'Promo code "$code" applied successfully!'
-                                          : 'Invalid promo code! Try SUMMER50 or FREESHIP'),
+                                      content: Text(
+                                        success
+                                            ? 'Promo code "$code" applied successfully!'
+                                            : 'Invalid promo code! Try SUMMER50 or FREESHIP',
+                                      ),
                                       backgroundColor: success
                                           ? const Color(0xFF6C5CE7)
                                           : const Color(0xFFFF7675),
@@ -172,7 +174,9 @@ class _CartScreenState extends State<CartScreen> {
                                 },
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 16, vertical: 12),
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
                                 ),
                                 child: const Text(
                                   'Apply',
@@ -210,8 +214,10 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               const SizedBox(height: 14),
-                              _buildCostRow('Subtotal',
-                                  '\$${state.subtotal.toStringAsFixed(2)}'),
+                              _buildCostRow(
+                                'Subtotal',
+                                '\$${state.subtotal.toStringAsFixed(2)}',
+                              ),
                               if (state.discountAmount > 0)
                                 _buildCostRow(
                                   'Promo Discount (${state.appliedPromoCode})',
@@ -242,59 +248,91 @@ class _CartScreenState extends State<CartScreen> {
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : Colors.white,
-                        borderRadius:
-                            const BorderRadius.vertical(top: Radius.circular(24)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.12),
-                            blurRadius: 16,
-                            offset: const Offset(0, -4),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                'Total Price',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.grey),
+                    child: SafeArea(
+                      top: false,
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF1E293B)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.12),
+                              blurRadius: 18,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 76,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'TOTAL',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 0.8,
+                                      color: isDark
+                                          ? Colors.white54
+                                          : Colors.black45,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '\$${state.grandTotal.toStringAsFixed(2)}',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF6C5CE7),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                '\$${state.grandTotal.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w900,
-                                  color: Color(0xFF6C5CE7),
+                            ),
+                            Container(
+                              height: 36,
+                              width: 1,
+                              color: isDark
+                                  ? Colors.white12
+                                  : const Color(0xFFE2E8F0),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: SizedBox(
+                                height: 50,
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            CheckoutScreen(state: state),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    size: 18,
+                                  ),
+                                  label: const Text('Checkout'),
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        CheckoutScreen(state: state),
-                                  ),
-                                );
-                              },
-                              child: const Text('Proceed to Checkout'),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -304,8 +342,12 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _buildCostRow(String label, String value,
-      {bool isDiscount = false, bool isTotal = false}) {
+  Widget _buildCostRow(
+    String label,
+    String value, {
+    bool isDiscount = false,
+    bool isTotal = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -323,8 +365,9 @@ class _CartScreenState extends State<CartScreen> {
             value,
             style: TextStyle(
               fontSize: isTotal ? 16 : 14,
-              fontWeight:
-                  isTotal || isDiscount ? FontWeight.bold : FontWeight.w600,
+              fontWeight: isTotal || isDiscount
+                  ? FontWeight.bold
+                  : FontWeight.w600,
               color: isDiscount
                   ? const Color(0xFFFF7675)
                   : (isTotal ? const Color(0xFF6C5CE7) : null),

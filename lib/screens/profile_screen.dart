@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../providers/app_state.dart';
 import 'order_history_screen.dart';
+import 'settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final AppState state;
@@ -14,8 +15,8 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'My Profile',
+        title: Text(
+          state.text('profile'),
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
@@ -70,7 +71,9 @@ class ProfileScreen extends StatelessWidget {
                               const SizedBox(width: 6),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 2),
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFF7675),
                                   borderRadius: BorderRadius.circular(8),
@@ -112,18 +115,39 @@ class ProfileScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStatItem('Orders', '${state.orders.length}', () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => OrderHistoryScreen(state: state),
-                        ),
-                      );
-                    }),
-                    Container(height: 30, width: 1, color: Colors.grey.withValues(alpha: 0.2)),
-                    _buildStatItem('Saved', '${state.wishlistIds.length}', () {}),
-                    Container(height: 30, width: 1, color: Colors.grey.withValues(alpha: 0.2)),
-                    _buildStatItem('Vouchers', '3 Active', () {}),
+                    _buildStatItem(
+                      state.text('orders'),
+                      '${state.orders.length}',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                OrderHistoryScreen(state: state),
+                          ),
+                        );
+                      },
+                    ),
+                    Container(
+                      height: 30,
+                      width: 1,
+                      color: Colors.grey.withValues(alpha: 0.2),
+                    ),
+                    _buildStatItem(
+                      state.text('saved'),
+                      '${state.wishlistIds.length}',
+                      () {},
+                    ),
+                    Container(
+                      height: 30,
+                      width: 1,
+                      color: Colors.grey.withValues(alpha: 0.2),
+                    ),
+                    _buildStatItem(
+                      state.text('vouchers'),
+                      '3 ${state.text('active')}',
+                      () {},
+                    ),
                   ],
                 ),
               ),
@@ -136,63 +160,58 @@ class ProfileScreen extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   children: [
-                    // Theme Switch Tile
-                    ListTile(
-                      leading: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF6C5CE7).withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.dark_mode_rounded,
-                            color: Color(0xFF6C5CE7)),
-                      ),
-                      title: const Text('Dark Mode',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
-                      trailing: Switch(
-                        value: state.isDarkMode,
-                        activeThumbColor: const Color(0xFF6C5CE7),
-                        onChanged: (val) => state.toggleTheme(),
-                      ),
-                    ),
-                    const Divider(height: 1, indent: 60),
-
                     _buildMenuTile(
                       icon: Icons.local_shipping_rounded,
-                      title: 'My Orders History',
-                      subtitle: 'Track past and ongoing deliveries',
+                      title: state.text('orderHistory'),
+                      subtitle: state.text('trackOrders'),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => OrderHistoryScreen(state: state),
+                            builder: (context) =>
+                                OrderHistoryScreen(state: state),
                           ),
                         );
                       },
                     ),
-                    const Divider(height: 1, indent: 60),
+                    _buildDivider(isDark),
 
                     _buildMenuTile(
                       icon: Icons.location_on_rounded,
-                      title: 'Shipping Addresses',
-                      subtitle: '1 Saved address',
+                      title: state.text('shippingAddresses'),
+                      subtitle: state.text('savedAddress'),
                       onTap: () {},
                     ),
-                    const Divider(height: 1, indent: 60),
+                    _buildDivider(isDark),
 
                     _buildMenuTile(
                       icon: Icons.payment_rounded,
-                      title: 'Payment Cards',
+                      title: state.text('paymentCards'),
                       subtitle: 'Visa ending in 4242',
                       onTap: () {},
                     ),
-                    const Divider(height: 1, indent: 60),
+                    _buildDivider(isDark),
 
                     _buildMenuTile(
                       icon: Icons.help_outline_rounded,
-                      title: 'Help & Support',
+                      title: state.text('helpSupport'),
                       subtitle: 'FAQs, Live Chat, Contact us',
                       onTap: () {},
+                    ),
+                    _buildDivider(isDark),
+
+                    _buildMenuTile(
+                      icon: Icons.settings_rounded,
+                      title: state.text('profileSettings'),
+                      subtitle: 'Display, language, and preferences',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SettingsScreen(state: state),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -202,9 +221,12 @@ class ProfileScreen extends StatelessWidget {
               // Logout Button
               OutlinedButton.icon(
                 onPressed: () {},
-                icon: const Icon(Icons.logout_rounded, color: Color(0xFFFF7675)),
-                label: const Text(
-                  'Log Out',
+                icon: const Icon(
+                  Icons.logout_rounded,
+                  color: Color(0xFFFF7675),
+                ),
+                label: Text(
+                  state.text('logOut'),
                   style: TextStyle(
                     color: Color(0xFFFF7675),
                     fontWeight: FontWeight.bold,
@@ -239,12 +261,18 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
-          ),
+          Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         ],
       ),
+    );
+  }
+
+  Widget _buildDivider(bool isDark) {
+    return Divider(
+      height: 1,
+      indent: 76,
+      endIndent: 16,
+      color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
     );
   }
 
@@ -265,7 +293,10 @@ class ProfileScreen extends StatelessWidget {
         child: Icon(icon, color: const Color(0xFF6C5CE7)),
       ),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(fontSize: 12, color: Colors.grey),
+      ),
       trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
     );
   }
