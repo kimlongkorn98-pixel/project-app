@@ -8,6 +8,8 @@ class ProductCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onFavoriteTap;
   final VoidCallback onAddToCartTap;
+  final int cartQuantity;
+  final VoidCallback? onDecreaseTap;
 
   const ProductCard({
     super.key,
@@ -16,6 +18,8 @@ class ProductCard extends StatelessWidget {
     required this.onTap,
     required this.onFavoriteTap,
     required this.onAddToCartTap,
+    this.cartQuantity = 0,
+    this.onDecreaseTap,
   });
 
   @override
@@ -47,15 +51,20 @@ class ProductCard extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                     child: Image.network(
                       product.imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
-                        color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
-                        child: const Icon(Icons.image_not_supported,
-                            color: Colors.grey),
+                        color: isDark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFE2E8F0),
+                        child: const Icon(
+                          Icons.image_not_supported,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                   ),
@@ -66,7 +75,9 @@ class ProductCard extends StatelessWidget {
                       left: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 3),
+                          horizontal: 6,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFF7675),
                           borderRadius: BorderRadius.circular(8),
@@ -164,22 +175,51 @@ class ProductCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        InkWell(
-                          onTap: onAddToCartTap,
-                          borderRadius: BorderRadius.circular(10),
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF6C5CE7),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(
-                              Icons.add_shopping_cart_rounded,
-                              color: Colors.white,
-                              size: 15,
-                            ),
-                          ),
-                        ),
+                        cartQuantity == 0
+                            ? InkWell(
+                                onTap: onAddToCartTap,
+                                borderRadius: BorderRadius.circular(10),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6C5CE7),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(
+                                    Icons.add_shopping_cart_rounded,
+                                    color: Colors.white,
+                                    size: 15,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF6C5CE7),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _QuantityButton(
+                                      icon: Icons.remove_rounded,
+                                      onTap: onDecreaseTap,
+                                    ),
+                                    Text(
+                                      '$cartQuantity',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    _QuantityButton(
+                                      icon: Icons.add_rounded,
+                                      onTap: onAddToCartTap,
+                                    ),
+                                  ],
+                                ),
+                              ),
                       ],
                     ),
                   ],
@@ -188,6 +228,26 @@ class ProductCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _QuantityButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  const _QuantityButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: SizedBox(
+        width: 24,
+        height: 28,
+        child: Icon(icon, color: Colors.white, size: 15),
       ),
     );
   }

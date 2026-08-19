@@ -35,7 +35,9 @@ class WishlistScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFF7675).withValues(alpha: 0.12),
+                          color: const Color(
+                            0xFFFF7675,
+                          ).withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -81,6 +83,8 @@ class WishlistScreen extends StatelessWidget {
                   return ProductCard(
                     product: product,
                     isWishlisted: true,
+                    cartQuantity: state.cartQuantityForProduct(product.id),
+                    onDecreaseTap: () => state.removeOneFromCart(product),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -95,13 +99,6 @@ class WishlistScreen extends StatelessWidget {
                     onFavoriteTap: () => state.toggleWishlist(product.id),
                     onAddToCartTap: () {
                       state.addToCart(product);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Added ${product.name} to cart!'),
-                          backgroundColor: const Color(0xFF6C5CE7),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
                     },
                   );
                 },

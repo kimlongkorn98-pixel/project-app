@@ -28,8 +28,7 @@ class AutoHorizontalProductList extends StatefulWidget {
       _AutoHorizontalProductListState();
 }
 
-class _AutoHorizontalProductListState
-    extends State<AutoHorizontalProductList> {
+class _AutoHorizontalProductListState extends State<AutoHorizontalProductList> {
   late final ScrollController _scrollController;
   Timer? _timer;
   bool _isUserInteracting = false;
@@ -150,6 +149,11 @@ class _AutoHorizontalProductListState
                         child: ProductCard(
                           product: product,
                           isWishlisted: widget.state.isWishlisted(product.id),
+                          cartQuantity: widget.state.cartQuantityForProduct(
+                            product.id,
+                          ),
+                          onDecreaseTap: () =>
+                              widget.state.removeOneFromCart(product),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -165,13 +169,6 @@ class _AutoHorizontalProductListState
                               widget.state.toggleWishlist(product.id),
                           onAddToCartTap: () {
                             widget.state.addToCart(product);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Added ${product.name} to cart!'),
-                                backgroundColor: const Color(0xFF6C5CE7),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
                           },
                         ),
                       ),

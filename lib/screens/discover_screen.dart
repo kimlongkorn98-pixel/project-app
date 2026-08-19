@@ -7,42 +7,87 @@ import '../widgets/product_card.dart';
 import '../widgets/product_scan_dialog.dart';
 import 'product_detail_screen.dart';
 
-class DiscoverScreen extends StatelessWidget {
+class DiscoverScreen extends StatefulWidget {
   final AppState state;
 
   const DiscoverScreen({super.key, required this.state});
 
   @override
+  State<DiscoverScreen> createState() => _DiscoverScreenState();
+}
+
+class _DiscoverScreenState extends State<DiscoverScreen> {
+  bool _isHeaderVisible = true;
+
+  bool _handleScroll(ScrollNotification notification) {
+    if (notification is! ScrollUpdateNotification ||
+        notification.metrics.axis != Axis.vertical) {
+      return false;
+    }
+
+    final scrollDelta = notification.scrollDelta;
+    if (scrollDelta == null || scrollDelta == 0) {
+      return false;
+    }
+
+    final shouldShow = scrollDelta < 0;
+    if (_isHeaderVisible != shouldShow) {
+      setState(() => _isHeaderVisible = shouldShow);
+    }
+    return false;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final state = widget.state;
     final products = state.filteredProducts;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Explore Products',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ),
       body: SafeArea(
         child: Column(
           children: [
-            // Search Input with Scan Icon
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 12),
-              child: CustomSearchBar(
-                hintText: 'Search electronics, fashion, shoes...',
-                onChanged: (val) => state.setSearchQuery(val),
-                onScanTap: () => ProductScanDialog.show(context, state),
+            ClipRect(
+              child: AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOut,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  heightFactor: _isHeaderVisible ? 1 : 0,
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(20, 16, 20, 10),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Explore Products',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 12),
+                        child: CustomSearchBar(
+                          hintText: 'Search electronics, fashion, shoes...',
+                          onChanged: (val) => state.setSearchQuery(val),
+                          onScanTap: () =>
+                              ProductScanDialog.show(context, state),
+                        ),
+                      ),
+                      CategorySelector(
+                        categories: MockData.categories,
+                        selectedCategoryId: state.selectedCategoryId,
+                        onSelectCategory: (catId) => state.setCategory(catId),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
               ),
             ),
-
-            // Category Pills
-            CategorySelector(
-              categories: MockData.categories,
-              selectedCategoryId: state.selectedCategoryId,
-              onSelectCategory: (catId) => state.setCategory(catId),
-            ),
-            const SizedBox(height: 16),
 
             // Product Grid or Empty State
             Expanded(
@@ -72,45 +117,47 @@ class DiscoverScreen extends StatelessWidget {
                         ],
                       ),
                     )
-                  : GridView.builder(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.68,
-                        crossAxisSpacing: 14,
-                        mainAxisSpacing: 14,
-                      ),
-                      itemCount: products.length,
-                      itemBuilder: (context, index) {
-                        final product = products[index];
-                        return ProductCard(
-                          product: product,
-                          isWishlisted: state.isWishlisted(product.id),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProductDetailScreen(
-                                  product: product,
-                                  state: state,
+                  : NotificationListener<ScrollNotification>(
+                      onNotification: _handleScroll,
+                      child: GridView.builder(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.68,
+                              crossAxisSpacing: 14,
+                              mainAxisSpacing: 14,
+                            ),
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return ProductCard(
+                            product: product,
+                            isWishlisted: state.isWishlisted(product.id),
+                            cartQuantity: state.cartQuantityForProduct(
+                              product.id,
+                            ),
+                            onDecreaseTap: () =>
+                                state.removeOneFromCart(product),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProductDetailScreen(
+                                    product: product,
+                                    state: state,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                          onFavoriteTap: () => state.toggleWishlist(product.id),
-                          onAddToCartTap: () {
-                            state.addToCart(product);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Added ${product.name} to cart!'),
-                                backgroundColor: const Color(0xFF6C5CE7),
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          },
-                        );
-                      },
+                              );
+                            },
+                            onFavoriteTap: () =>
+                                state.toggleWishlist(product.id),
+                            onAddToCartTap: () {
+                              state.addToCart(product);
+                            },
+                          );
+                        },
+                      ),
                     ),
             ),
           ],
