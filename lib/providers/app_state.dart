@@ -4,6 +4,12 @@ import '../data/mock_data.dart';
 import '../l10n/app_strings.dart';
 
 class AppState extends ChangeNotifier {
+  final Map<String, ({String name, String password})> _users = {
+    'alex.morgan@example.com': (name: 'Alex Morgan', password: 'Shop1234'),
+  };
+  bool _isAuthenticated = false;
+  String? _currentUserEmail;
+  String? _currentUserName;
   bool _isDarkMode = false;
   String _languageCode = 'en';
   String _selectedCategoryId = 'all';
@@ -32,6 +38,10 @@ class AppState extends ChangeNotifier {
   }
 
   // Getters
+  bool get isAuthenticated => _isAuthenticated;
+  String get currentUserName => _currentUserName ?? 'Guest';
+  String get currentUserEmail => _currentUserEmail ?? '';
+  String get currentUserFirstName => currentUserName.split(' ').first;
   bool get isDarkMode => _isDarkMode;
   String get languageCode => _languageCode;
   String get selectedCategoryId => _selectedCategoryId;
@@ -79,6 +89,48 @@ class AppState extends ChangeNotifier {
   }
 
   // Actions
+  String? login({required String email, required String password}) {
+    final normalizedEmail = email.trim().toLowerCase();
+    final user = _users[normalizedEmail];
+    if (user == null || user.password != password) {
+      return 'Incorrect email or password.';
+    }
+
+    _currentUserEmail = normalizedEmail;
+    _currentUserName = user.name;
+    _isAuthenticated = true;
+    notifyListeners();
+    return null;
+  }
+
+  String? register({
+    required String name,
+    required String email,
+    required String password,
+  }) {
+    final normalizedEmail = email.trim().toLowerCase();
+    if (_users.containsKey(normalizedEmail)) {
+      return 'An account with this email already exists.';
+    }
+
+    final cleanName = name.trim();
+    _users[normalizedEmail] = (name: cleanName, password: password);
+    _currentUserEmail = normalizedEmail;
+    _currentUserName = cleanName;
+    _isAuthenticated = true;
+    notifyListeners();
+    return null;
+  }
+
+  void signOut() {
+    _isAuthenticated = false;
+    _currentUserEmail = null;
+    _currentUserName = null;
+    _searchQuery = '';
+    _selectedCategoryId = 'all';
+    notifyListeners();
+  }
+
   void toggleTheme() {
     _isDarkMode = !_isDarkMode;
     notifyListeners();

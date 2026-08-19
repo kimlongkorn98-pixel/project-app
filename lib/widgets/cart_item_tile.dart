@@ -96,10 +96,7 @@ class CartItemTile extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       'Size: ${item.selectedSize}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),

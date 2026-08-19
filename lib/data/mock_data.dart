@@ -354,21 +354,24 @@ class MockData {
       'subtitle': 'Up to 50% OFF Top Tech & Fashion',
       'code': 'SUMMER50',
       'color': '0xFF6C5CE7',
-      'image': 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=800&auto=format&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=800&auto=format&fit=crop',
     },
     {
       'title': 'NEW ARRIVALS 2026',
       'subtitle': 'Discover the Latest Audio Tech & Smart Wearables',
       'code': 'NEWARRIVAL',
       'color': '0xFF00CEC9',
-      'image': 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800&auto=format&fit=crop',
     },
     {
       'title': 'FREE EXPRESS SHIPPING',
       'subtitle': 'On all orders over \$99 with code FREESHIP',
       'code': 'FREESHIP',
       'color': '0xFFFF7675',
-      'image': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop',
+      'image':
+          'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=800&auto=format&fit=crop',
     },
   ];
 }

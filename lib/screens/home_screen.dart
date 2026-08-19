@@ -26,7 +26,12 @@ class HomeScreen extends StatelessWidget {
     final flashSaleProducts = MockData.products
         .where((p) => p.isFlashSale)
         .toList();
-    final popularProducts = state.filteredProducts;
+    final popularProducts = MockData.products;
+    const languages = {
+      'en': (flag: '🇺🇸', name: 'English'),
+      'km': (flag: '🇰🇭', name: 'ខ្មែរ'),
+      'vi': (flag: '🇻🇳', name: 'Tiếng Việt'),
+    };
 
     return Scaffold(
       body: SafeArea(
@@ -58,7 +63,7 @@ class HomeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Hello, Alex! 👋',
+                                'Hello, ${state.currentUserFirstName}! 👋',
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: isDark
@@ -79,15 +84,101 @@ class HomeScreen extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.refresh_rounded,
-                              color: Color(0xFF6C5CE7),
+                          PopupMenuButton<String>(
+                            tooltip: state.text('language'),
+                            initialValue: state.languageCode,
+                            onSelected: state.setLanguage,
+                            offset: const Offset(0, 8),
+                            position: PopupMenuPosition.under,
+                            color: isDark
+                                ? const Color(0xFF1E293B)
+                                : Colors.white,
+                            surfaceTintColor: Colors.transparent,
+                            elevation: 14,
+                            menuPadding: const EdgeInsets.symmetric(
+                              vertical: 8,
                             ),
-                            tooltip: 'Refresh',
-                            onPressed: () => state.refreshCatalog(),
+                            constraints: const BoxConstraints(minWidth: 200),
+                            padding: EdgeInsets.zero,
+                            style: IconButton.styleFrom(
+                              minimumSize: const Size(40, 40),
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            icon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Icon(
+                                  Icons.language_rounded,
+                                  color: Color(0xFF6C5CE7),
+                                  size: 22,
+                                ),
+                                Icon(
+                                  Icons.arrow_drop_down_rounded,
+                                  color: Color(0xFF6C5CE7),
+                                  size: 15,
+                                ),
+                              ],
+                            ),
+                            itemBuilder: (context) => languages.entries.map((
+                              language,
+                            ) {
+                              final isSelected =
+                                  state.languageCode == language.key;
+                              return PopupMenuItem<String>(
+                                value: language.key,
+                                height: 54,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 38,
+                                      height: 38,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? const Color(
+                                                0xFF6C5CE7,
+                                              ).withValues(alpha: 0.10)
+                                            : Colors.transparent,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Text(
+                                        language.value.flag,
+                                        style: const TextStyle(fontSize: 22),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        language.value.name,
+                                        style: TextStyle(
+                                          fontWeight: isSelected
+                                              ? FontWeight.w700
+                                              : FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                    if (isSelected)
+                                      const Icon(
+                                        Icons.check_circle_rounded,
+                                        color: Color(0xFF6C5CE7),
+                                        size: 20,
+                                      ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
                           ),
                           IconButton(
+                            constraints: const BoxConstraints.tightFor(
+                              width: 40,
+                              height: 40,
+                            ),
+                            padding: const EdgeInsets.all(8),
+                            visualDensity: VisualDensity.compact,
                             icon: Icon(
                               state.isDarkMode
                                   ? Icons.wb_sunny_rounded
@@ -99,14 +190,20 @@ class HomeScreen extends StatelessWidget {
                           Stack(
                             children: [
                               IconButton(
+                                constraints: const BoxConstraints.tightFor(
+                                  width: 40,
+                                  height: 40,
+                                ),
+                                padding: const EdgeInsets.all(8),
+                                visualDensity: VisualDensity.compact,
                                 icon: const Icon(
                                   Icons.notifications_none_rounded,
                                 ),
                                 onPressed: () {},
                               ),
                               Positioned(
-                                top: 10,
-                                right: 10,
+                                top: 5,
+                                right: 5,
                                 child: Container(
                                   width: 8,
                                   height: 8,
@@ -131,6 +228,9 @@ class HomeScreen extends StatelessWidget {
                     vertical: 8,
                   ),
                   child: CustomSearchBar(
+                    suggestions: MockData.products.map(
+                      (product) => product.name,
+                    ),
                     onChanged: (val) {
                       state.setSearchQuery(val);
                       if (val.isNotEmpty) {

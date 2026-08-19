@@ -52,8 +52,8 @@ class _ProductScanDialogState extends State<ProductScanDialog>
   void _triggerScan([Product? product]) {
     setState(() {
       _isScanning = false;
-      _scannedProduct = product ??
-          (MockData.products..shuffle()).firstWhere((p) => true);
+      _scannedProduct =
+          product ?? (MockData.products..shuffle()).firstWhere((p) => true);
     });
 
     Future.delayed(const Duration(milliseconds: 900), () {
@@ -74,13 +74,14 @@ class _ProductScanDialogState extends State<ProductScanDialog>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
     return Container(
       height: MediaQuery.of(context).size.height * 0.72,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : Colors.white,
+        gradient: const LinearGradient(
+          colors: [Color(0xFF3B82F6), Color(0xFF1D4ED8)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
@@ -98,7 +99,7 @@ class _ProductScanDialogState extends State<ProductScanDialog>
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: isDark ? Colors.white24 : Colors.black12,
+              color: Colors.white38,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -115,12 +116,12 @@ class _ProductScanDialogState extends State<ProductScanDialog>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF6C5CE7).withValues(alpha: 0.15),
+                        color: Colors.white.withValues(alpha: 0.18),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.qr_code_scanner_rounded,
-                        color: Color(0xFF6C5CE7),
+                        color: Colors.white,
                         size: 22,
                       ),
                     ),
@@ -130,12 +131,13 @@ class _ProductScanDialogState extends State<ProductScanDialog>
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
                   ],
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close_rounded),
+                  icon: const Icon(Icons.close_rounded, color: Colors.white),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],
@@ -153,7 +155,7 @@ class _ProductScanDialogState extends State<ProductScanDialog>
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E293B) : Colors.black,
+                        color: const Color(0xFF0F172A),
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: Stack(
@@ -174,16 +176,21 @@ class _ProductScanDialogState extends State<ProductScanDialog>
                               animation: _laserAnimation,
                               builder: (context, child) {
                                 return Align(
-                                  alignment: Alignment(0, (_laserAnimation.value * 2) - 1),
+                                  alignment: Alignment(
+                                    0,
+                                    (_laserAnimation.value * 2) - 1,
+                                  ),
                                   child: Container(
                                     height: 3,
                                     width: 200,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFFF7675),
+                                      color: const Color(0xFF3B82F6),
                                       borderRadius: BorderRadius.circular(2),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFFFF7675).withValues(alpha: 0.8),
+                                          color: const Color(
+                                            0xFF3B82F6,
+                                          ).withValues(alpha: 0.8),
                                           blurRadius: 10,
                                           spreadRadius: 2,
                                         ),
@@ -200,7 +207,9 @@ class _ProductScanDialogState extends State<ProductScanDialog>
                             bottom: 20,
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.black.withValues(alpha: 0.7),
                                 borderRadius: BorderRadius.circular(20),
@@ -246,7 +255,7 @@ class _ProductScanDialogState extends State<ProductScanDialog>
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Colors.grey,
+                        color: Colors.white70,
                       ),
                     ),
                   ),
@@ -278,14 +287,22 @@ class _ProductScanDialogState extends State<ProductScanDialog>
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ActionChip(
-        avatar: const Icon(Icons.qr_code_rounded, size: 16, color: Color(0xFF6C5CE7)),
+        avatar: const Icon(
+          Icons.qr_code_rounded,
+          size: 16,
+          color: Colors.white,
+        ),
         label: Text(
           label,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
-        backgroundColor: const Color(0xFF6C5CE7).withValues(alpha: 0.1),
+        backgroundColor: Colors.white.withValues(alpha: 0.16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        side: BorderSide.none,
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.22)),
         onPressed: () => _triggerScan(product),
       ),
     );

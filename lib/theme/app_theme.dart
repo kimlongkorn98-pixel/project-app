@@ -37,10 +37,7 @@ class AppTheme {
       ),
       textTheme: GoogleFonts.plusJakartaSansTextTheme(
         ThemeData.dark().textTheme,
-      ).apply(
-        bodyColor: darkTextPrimary,
-        displayColor: darkTextPrimary,
-      ),
+      ).apply(bodyColor: darkTextPrimary, displayColor: darkTextPrimary),
       appBarTheme: const AppBarTheme(
         backgroundColor: darkBackground,
         elevation: 0,
@@ -58,7 +55,10 @@ class AppTheme {
         filled: true,
         fillColor: darkSurface,
         hintStyle: const TextStyle(color: darkTextSecondary),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -78,7 +78,9 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: GoogleFonts.plusJakartaSans(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -102,10 +104,7 @@ class AppTheme {
       ),
       textTheme: GoogleFonts.plusJakartaSansTextTheme(
         ThemeData.light().textTheme,
-      ).apply(
-        bodyColor: lightTextPrimary,
-        displayColor: lightTextPrimary,
-      ),
+      ).apply(bodyColor: lightTextPrimary, displayColor: lightTextPrimary),
       appBarTheme: const AppBarTheme(
         backgroundColor: lightBackground,
         elevation: 0,
@@ -123,7 +122,10 @@ class AppTheme {
         filled: true,
         fillColor: lightSurfaceVariant,
         hintStyle: const TextStyle(color: lightTextSecondary),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,
@@ -143,7 +145,9 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: GoogleFonts.plusJakartaSans(
             fontSize: 16,
             fontWeight: FontWeight.bold,
