@@ -23,14 +23,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late String _selectedSize;
   int _quantity = 1;
 
+  List<String> get _availableSizes {
+    final sizes = widget.product.sizes;
+    final isGenericFoodSize =
+        widget.product.category == 'food' &&
+        sizes.length == 1 &&
+        sizes.first == 'Standard';
+    return isGenericFoodSize ? const ['300ml', '500ml', '1500ml'] : sizes;
+  }
+
   @override
   void initState() {
     super.initState();
     _selectedColor = widget.product.colors.isNotEmpty
         ? widget.product.colors.first
         : Colors.black;
-    _selectedSize = widget.product.sizes.isNotEmpty
-        ? widget.product.sizes.first
+    _selectedSize = _availableSizes.isNotEmpty
+        ? _availableSizes.first
         : 'Standard';
   }
 
@@ -39,6 +48,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isWishlisted = widget.state.isWishlisted(widget.product.id);
+    final selectedStock = widget.product.stockForSize(_selectedSize);
 
     return Scaffold(
       body: Stack(
@@ -97,8 +107,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Image.network(
-                          widget.product.imageUrl,
+                        Image(
+                          image: widget.product.imageProvider,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) =>
                               Container(
@@ -167,15 +177,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           Row(
                             children: [
                               Icon(
-                                Icons.check_circle_rounded,
-                                color: Colors.green.shade400,
+                                selectedStock > 0
+                                    ? Icons.check_circle_rounded
+                                    : Icons.cancel_rounded,
+                                color: selectedStock > 0
+                                    ? Colors.green.shade400
+                                    : Colors.red.shade400,
                                 size: 16,
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                'In Stock (${widget.product.stock})',
+                                selectedStock > 0
+                                    ? 'In Stock ($selectedStock)'
+                                    : 'Out of Stock',
                                 style: TextStyle(
-                                  color: Colors.green.shade400,
+                                  color: selectedStock > 0
+                                      ? Colors.green.shade400
+                                      : Colors.red.shade400,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -210,7 +228,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           if (widget.product.originalPrice >
                               widget.product.price)
                             Text(
-                              '\$${widget.product.originalPrice.toStringAsFixed(2)}',
+                              widget.product.formattedOriginalPrice,
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
@@ -219,7 +237,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           const SizedBox(width: 8),
                           Text(
-                            '\$${widget.product.price.toStringAsFixed(2)}',
+                            widget.product.formattedPriceForSize(_selectedSize),
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w900,
@@ -231,7 +249,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       const Divider(height: 32),
 
                       // Color Options
-                      if (widget.product.colors.isNotEmpty) ...[
+                      if (widget.product.category != 'food' &&
+                          widget.product.colors.isNotEmpty) ...[
                         const Text(
                           'Select Color',
                           style: TextStyle(
@@ -283,10 +302,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ],
 
                       // Size Options
-                      if (widget.product.sizes.isNotEmpty) ...[
-                        const Text(
-                          'Select Size',
-                          style: TextStyle(
+                      if (_availableSizes.isNotEmpty) ...[
+                        Text(
+                          widget.product.category == 'food'
+                              ? 'Select Volume'
+                              : 'Select Size',
+                          style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),
@@ -295,10 +316,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         Wrap(
                           spacing: 10,
                           runSpacing: 10,
-                          children: widget.product.sizes.map((s) {
+                          children: _availableSizes.map((s) {
                             final isSelected = _selectedSize == s;
                             return GestureDetector(
-                              onTap: () => setState(() => _selectedSize = s),
+                              onTap: () => setState(() {
+                                _selectedSize = s;
+                                final stock = widget.product.stockForSize(s);
+                                if (_quantity > stock) {
+                                  _quantity = stock > 0 ? stock : 1;
+                                }
+                              }),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
@@ -399,7 +426,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.add_rounded, size: 18),
-                                  onPressed: () => setState(() => _quantity++),
+                                  onPressed: _quantity < selectedStock
+                                      ? () => setState(() => _quantity++)
+                                      : null,
                                 ),
                               ],
                             ),
@@ -438,26 +467,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () {
-                          widget.state.addToCart(
-                            widget.product,
-                            color: _selectedColor,
-                            size: _selectedSize,
-                            quantity: _quantity,
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Added $_quantity x ${widget.product.name} to cart!',
-                              ),
-                              backgroundColor: const Color(0xFF6C5CE7),
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                          );
-                        },
+                        onPressed: selectedStock > 0
+                            ? () {
+                                widget.state.addToCart(
+                                  widget.product,
+                                  color: _selectedColor,
+                                  size: _selectedSize,
+                                  quantity: _quantity,
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Added $_quantity x ${widget.product.name} to cart!',
+                                    ),
+                                    backgroundColor: const Color(0xFF6C5CE7),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                );
+                              }
+                            : null,
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           side: const BorderSide(
@@ -481,21 +512,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     const SizedBox(width: 14),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
-                          widget.state.addToCart(
-                            widget.product,
-                            color: _selectedColor,
-                            size: _selectedSize,
-                            quantity: _quantity,
-                          );
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  CheckoutScreen(state: widget.state),
-                            ),
-                          );
-                        },
+                        onPressed: selectedStock > 0
+                            ? () {
+                                widget.state.addToCart(
+                                  widget.product,
+                                  color: _selectedColor,
+                                  size: _selectedSize,
+                                  quantity: _quantity,
+                                );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        CheckoutScreen(state: widget.state),
+                                  ),
+                                );
+                              }
+                            : null,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),

@@ -72,7 +72,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                         padding: const EdgeInsets.fromLTRB(20, 10, 20, 12),
                         child: CustomSearchBar(
                           hintText: 'Search electronics, fashion, shoes...',
-                          suggestions: MockData.products.map(
+                          suggestions: state.catalogProducts.map(
                             (product) => product.name,
                           ),
                           onChanged: (val) => state.setSearchQuery(val),

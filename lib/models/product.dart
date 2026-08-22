@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 class Product {
@@ -16,6 +18,9 @@ class Product {
   final bool isFlashSale;
   final int discountPercentage;
   final int stock;
+  final String currencySymbol;
+  final Map<String, double> variantPrices;
+  final Map<String, int> variantStocks;
 
   Product({
     required this.id,
@@ -33,7 +38,33 @@ class Product {
     this.isFlashSale = false,
     this.discountPercentage = 0,
     this.stock = 50,
+    this.currencySymbol = '\$',
+    this.variantPrices = const {},
+    this.variantStocks = const {},
   });
+
+  String formatPrice(double value) => currencySymbol == '៛'
+      ? '$currencySymbol${value.toStringAsFixed(0)}'
+      : '$currencySymbol${value.toStringAsFixed(2)}';
+
+  String get formattedPrice => formatPrice(price);
+  String get formattedOriginalPrice => formatPrice(originalPrice);
+
+  double priceForSize(String size) => variantPrices[size] ?? price;
+
+  int stockForSize(String size) => variantStocks[size] ?? stock;
+
+  String formattedPriceForSize(String size) => formatPrice(priceForSize(size));
+
+  ImageProvider get imageProvider {
+    if (imageUrl.startsWith('data:image/')) {
+      final commaIndex = imageUrl.indexOf(',');
+      if (commaIndex >= 0) {
+        return MemoryImage(base64Decode(imageUrl.substring(commaIndex + 1)));
+      }
+    }
+    return NetworkImage(imageUrl);
+  }
 }
 
 class CategoryItem {
@@ -63,7 +94,8 @@ class CartItem {
     this.quantity = 1,
   });
 
-  double get totalPrice => product.price * quantity;
+  double get totalPrice => product.priceForSize(selectedSize) * quantity;
+  String get formattedTotalPrice => product.formatPrice(totalPrice);
 }
 
 enum OrderStatus { placed, processing, shipped, delivered }

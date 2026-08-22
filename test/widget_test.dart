@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shopping_app/main.dart';
 import 'package:shopping_app/providers/app_state.dart';
 import 'package:shopping_app/screens/auth_screen.dart';
+import 'package:shopping_app/screens/profile_screen.dart';
 import 'package:shopping_app/widgets/custom_search_bar.dart';
 
 class TestHttpOverrides extends HttpOverrides {}
@@ -11,6 +12,23 @@ class TestHttpOverrides extends HttpOverrides {}
 void main() {
   setUpAll(() {
     HttpOverrides.global = TestHttpOverrides();
+  });
+
+  test('cart starts empty', () {
+    final state = AppState();
+
+    expect(state.cartItems, isEmpty);
+    expect(state.cartCount, 0);
+  });
+
+  test('food category returns food and drink products', () {
+    final state = AppState()..setCategory('food');
+
+    expect(state.filteredProducts, isNotEmpty);
+    expect(
+      state.filteredProducts.every((product) => product.category == 'food'),
+      isTrue,
+    );
   });
 
   testWidgets('ShoppingApp smoke test', (WidgetTester tester) async {
@@ -98,5 +116,45 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Bose Speaker'), findsOneWidget);
     expect(find.text('Apple iPad Pro'), findsNothing);
+  });
+
+  testWidgets('seller can open the store and publish a product', (
+    tester,
+  ) async {
+    final state = AppState();
+    await tester.pumpWidget(MaterialApp(home: ProfileScreen(state: state)));
+
+    await tester.scrollUntilVisible(
+      find.text('Seller Center'),
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Seller Center'));
+    await tester.pumpAndSettle();
+    expect(find.text('Start selling'), findsOneWidget);
+
+    await tester.tap(find.text('Create first listing'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Product name'),
+      'Handmade Tote Bag',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Price'),
+      '39.99',
+    );
+    await tester.enterText(find.widgetWithText(TextFormField, 'Stock'), '8');
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Description'),
+      'A durable handmade everyday tote.',
+    );
+    await tester.drag(find.byType(ListView).last, const Offset(0, -450));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Publish product'));
+    await tester.pumpAndSettle();
+
+    expect(state.sellerProducts, hasLength(1));
+    expect(state.catalogProducts.first.name, 'Handmade Tote Bag');
+    expect(find.text('Handmade Tote Bag'), findsOneWidget);
   });
 }

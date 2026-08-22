@@ -23,10 +23,14 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final flashSaleProducts = MockData.products
+    final categoryProducts = state.catalogProducts.where((product) {
+      return state.selectedCategoryId == 'all' ||
+          product.category == state.selectedCategoryId;
+    }).toList();
+    final flashSaleProducts = categoryProducts
         .where((p) => p.isFlashSale)
         .toList();
-    final popularProducts = MockData.products;
+    final popularProducts = categoryProducts;
     const languages = {
       'en': (flag: '🇺🇸', name: 'English'),
       'km': (flag: '🇰🇭', name: 'ខ្មែរ'),
@@ -228,7 +232,7 @@ class HomeScreen extends StatelessWidget {
                     vertical: 8,
                   ),
                   child: CustomSearchBar(
-                    suggestions: MockData.products.map(
+                    suggestions: state.catalogProducts.map(
                       (product) => product.name,
                     ),
                     onChanged: (val) {

@@ -224,7 +224,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                       ),
                       Text(
-                        '${item.quantity} × \$${item.product.price.toStringAsFixed(2)}',
+                        '${item.quantity} × ${item.product.formattedPriceForSize(item.selectedSize)}',
                         style: const TextStyle(color: Colors.grey),
                       ),
                     ],

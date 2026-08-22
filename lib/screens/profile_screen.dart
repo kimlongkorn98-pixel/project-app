@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../providers/app_state.dart';
 import 'order_history_screen.dart';
+import 'seller_store_screen.dart';
 import 'settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -197,6 +198,22 @@ class ProfileScreen extends StatelessWidget {
                       title: state.text('helpSupport'),
                       subtitle: 'FAQs, Live Chat, Contact us',
                       onTap: () {},
+                    ),
+                    _buildDivider(isDark),
+
+                    _buildMenuTile(
+                      icon: Icons.storefront_rounded,
+                      title: state.text('sellerCenter'),
+                      subtitle: state.text('sellerCenterSubtitle'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SellerStoreScreen(state: state),
+                          ),
+                        );
+                      },
                     ),
                     _buildDivider(isDark),
 

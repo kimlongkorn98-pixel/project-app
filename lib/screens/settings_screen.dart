@@ -96,17 +96,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _settingsCard({required bool isDark, required Widget child}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-          ),
-        ],
-      ),
+    return Material(
+      color: isDark ? const Color(0xFF1E293B) : Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      elevation: 1,
+      shadowColor: Colors.black.withValues(alpha: 0.12),
+      clipBehavior: Clip.antiAlias,
       child: child,
     );
   }
@@ -128,53 +123,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       isScrollControlled: true,
       builder: (sheetContext) => StatefulBuilder(
-        builder: (context, setSheetState) => SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.state.text('chooseLanguage'),
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                ...const {
-                  'en': 'English',
-                  'km': 'ខ្មែរ',
-                  'vi': 'Tiếng Việt',
-                }.entries.map(
-                  (language) => RadioListTile<String>(
-                    contentPadding: EdgeInsets.zero,
-                    value: language.key,
-                    groupValue: pendingLanguage,
-                    activeColor: const Color(0xFF6C5CE7),
-                    title: Text(language.value),
-                    onChanged: (value) =>
-                        setSheetState(() => pendingLanguage = value!),
+        builder: (context, setSheetState) => RadioGroup<String>(
+          groupValue: pendingLanguage,
+          onChanged: (value) {
+            if (value != null) {
+              setSheetState(() => pendingLanguage = value);
+            }
+          },
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.state.text('chooseLanguage'),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(sheetContext),
-                        child: Text(widget.state.text('cancel')),
-                      ),
+                  const SizedBox(height: 8),
+                  ...const {
+                    'en': 'English',
+                    'km': 'ខ្មែរ',
+                    'vi': 'Tiếng Việt',
+                  }.entries.map(
+                    (language) => RadioListTile<String>(
+                      contentPadding: EdgeInsets.zero,
+                      value: language.key,
+                      activeColor: const Color(0xFF6C5CE7),
+                      title: Text(language.value),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () =>
-                            Navigator.pop(sheetContext, pendingLanguage),
-                        child: Text(widget.state.text('apply')),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(sheetContext),
+                          child: Text(widget.state.text('cancel')),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () =>
+                              Navigator.pop(sheetContext, pendingLanguage),
+                          child: Text(widget.state.text('apply')),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

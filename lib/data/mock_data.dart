@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 
 class MockData {
-  static final List<CategoryItem> categories = [
+  static List<CategoryItem> get categories => [
     CategoryItem(
       id: 'all',
       name: 'All',
@@ -39,9 +39,15 @@ class MockData {
       icon: Icons.chair_rounded,
       color: const Color(0xFFFDCB6E),
     ),
+    CategoryItem(
+      id: 'food',
+      name: 'Food & Drink',
+      icon: Icons.restaurant_rounded,
+      color: const Color(0xFFFF9F43),
+    ),
   ];
 
-  static final List<Product> products = [
+  static List<Product> get products => [
     Product(
       id: 'p1',
       name: 'Sony WH-1000XM5 Wireless Headphones',
@@ -345,6 +351,63 @@ class MockData {
       isFlashSale: false,
       discountPercentage: 12,
       stock: 19,
+    ),
+    Product(
+      id: 'p17',
+      name: 'Artisan Margherita Pizza',
+      category: 'food',
+      price: 14.99,
+      originalPrice: 18.99,
+      rating: 4.9,
+      reviewCount: 386,
+      description:
+          'Stone-baked artisan pizza topped with San Marzano tomato sauce, fresh mozzarella, basil, and extra virgin olive oil.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?q=80&w=800&auto=format&fit=crop',
+      colors: [Colors.red],
+      sizes: ['Medium', 'Large'],
+      isPopular: true,
+      isFlashSale: true,
+      discountPercentage: 21,
+      stock: 30,
+    ),
+    Product(
+      id: 'p18',
+      name: 'Fresh Avocado Power Bowl',
+      category: 'food',
+      price: 11.50,
+      originalPrice: 14.00,
+      rating: 4.8,
+      reviewCount: 244,
+      description:
+          'A nourishing bowl of avocado, roasted vegetables, leafy greens, quinoa, and a bright citrus dressing.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop',
+      colors: [Colors.green],
+      sizes: ['Regular'],
+      isPopular: true,
+      isFlashSale: true,
+      discountPercentage: 18,
+      stock: 24,
+    ),
+    Product(
+      id: 'p19',
+      name: 'Premium Iced Matcha Latte',
+      category: 'food',
+      price: 5.75,
+      originalPrice: 6.50,
+      rating: 4.7,
+      reviewCount: 198,
+      description:
+          'Ceremonial-grade Japanese matcha whisked with fresh milk and served over ice for a smooth, refreshing finish.',
+      imageUrl:
+          'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?q=80&w=800&auto=format&fit=crop',
+      colors: [Colors.green],
+      sizes: ['Medium', 'Large'],
+      isPopular: true,
+      isFlashSale: false,
+      discountPercentage: 12,
+      stock: 40,
     ),
   ];
 
