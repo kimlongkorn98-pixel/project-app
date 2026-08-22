@@ -5,11 +5,7 @@ class PromoCarousel extends StatefulWidget {
   final List<Map<String, String>> banners;
   final Function(String code)? onBannerTap;
 
-  const PromoCarousel({
-    super.key,
-    required this.banners,
-    this.onBannerTap,
-  });
+  const PromoCarousel({super.key, required this.banners, this.onBannerTap});
 
   @override
   State<PromoCarousel> createState() => _PromoCarouselState();
@@ -102,7 +98,9 @@ class _PromoCarouselState extends State<PromoCarousel> {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFF7675),
                           borderRadius: BorderRadius.circular(12),
@@ -141,7 +139,9 @@ class _PromoCarouselState extends State<PromoCarousel> {
                         onTap: () => widget.onBannerTap?.call(code),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 6),
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20),

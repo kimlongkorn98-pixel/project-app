@@ -84,9 +84,13 @@ class OrderHistoryScreen extends StatelessWidget {
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
+                                horizontal: 10,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF6C5CE7).withValues(alpha: 0.12),
+                                color: const Color(
+                                  0xFF6C5CE7,
+                                ).withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
@@ -102,8 +106,13 @@ class OrderHistoryScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          DateFormat('MMM dd, yyyy • hh:mm a').format(order.date),
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          DateFormat(
+                            'MMM dd, yyyy • hh:mm a',
+                          ).format(order.date),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
                         ),
                         const Divider(height: 20),
 
@@ -136,7 +145,10 @@ class OrderHistoryScreen extends StatelessWidget {
                           children: [
                             Text(
                               '${order.items.length} Item(s)',
-                              style: const TextStyle(color: Colors.grey, fontSize: 13),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 13,
+                              ),
                             ),
                             Text(
                               'Total: \$${order.total.toStringAsFixed(2)}',

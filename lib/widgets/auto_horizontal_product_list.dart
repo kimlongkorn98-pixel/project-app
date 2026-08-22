@@ -86,27 +86,6 @@ class _AutoHorizontalProductListState extends State<AutoHorizontalProductList> {
     super.dispose();
   }
 
-  void _scrollManual(bool isNext) {
-    if (!_scrollController.hasClients) return;
-    _onUserInteractionStart();
-    final step = widget.cardWidth + widget.cardSpacing;
-    final target = isNext
-        ? _scrollController.offset + step
-        : _scrollController.offset - step;
-
-    _scrollController.animateTo(
-      target,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeOutCubic,
-    );
-
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted && !_isUserInteracting) {
-        _onUserInteractionEnd();
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     if (widget.products.isEmpty) {
@@ -174,52 +153,6 @@ class _AutoHorizontalProductListState extends State<AutoHorizontalProductList> {
                       ),
                     );
                   },
-                ),
-              ),
-
-              // Left & Right Quick Arrow Navigation Overlays
-              Positioned(
-                left: 4,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () => _scrollManual(false),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.45),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.chevron_left_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 4,
-                top: 0,
-                bottom: 0,
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () => _scrollManual(true),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.45),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.chevron_right_rounded,
-                        color: Colors.white,
-                        size: 22,
-                      ),
-                    ),
-                  ),
                 ),
               ),
             ],

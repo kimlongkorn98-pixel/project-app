@@ -54,8 +54,8 @@ class ProductCard extends StatelessWidget {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(20),
                     ),
-                    child: Image.network(
-                      product.imageUrl,
+                    child: Image(
+                      image: product.imageProvider,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: isDark
@@ -157,7 +157,7 @@ class ProductCard extends StatelessWidget {
                             children: [
                               if (product.originalPrice > product.price)
                                 Text(
-                                  '\$${product.originalPrice.toStringAsFixed(2)}',
+                                  product.formattedOriginalPrice,
                                   style: const TextStyle(
                                     fontSize: 10,
                                     color: Colors.grey,
@@ -165,7 +165,7 @@ class ProductCard extends StatelessWidget {
                                   ),
                                 ),
                               Text(
-                                '\$${product.price.toStringAsFixed(2)}',
+                                product.formattedPrice,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w900,

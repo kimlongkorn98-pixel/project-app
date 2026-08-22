@@ -1,5 +1,9 @@
+
+
+
 import 'package:flutter/material.dart';
 import 'providers/app_state.dart';
+import 'screens/auth_screen.dart';
 import 'screens/main_screen.dart';
 import 'theme/app_theme.dart';
 
@@ -29,7 +33,9 @@ class _ShoppingAppState extends State<ShoppingApp> {
           themeMode: _appState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          home: MainScreen(state: _appState),
+          home: _appState.isAuthenticated
+              ? MainScreen(state: _appState)
+              : AuthScreen(state: _appState),
         );
       },
     );

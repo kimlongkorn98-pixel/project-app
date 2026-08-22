@@ -4,41 +4,48 @@ import '../data/mock_data.dart';
 import '../l10n/app_strings.dart';
 
 class AppState extends ChangeNotifier {
+  final Map<String, ({String name, String password})> _users = {
+    'alex.morgan@example.com': (name: 'Alex Morgan', password: 'Shop1234'),
+  };
+  bool _isAuthenticated = false;
+  String? _currentUserEmail;
+  String? _currentUserName;
   bool _isDarkMode = false;
   String _languageCode = 'en';
   String _selectedCategoryId = 'all';
   String _searchQuery = '';
+  String _storeName = 'My Store';
+  String? _storeOwnerName;
+  String? _storeImageData;
 
   final List<CartItem> _cartItems = [];
   final Set<String> _wishlistIds = {'p1', 'p4'};
   final List<OrderModel> _orders = [];
+  final List<Product> _sellerProducts = [];
 
   String? _appliedPromoCode;
   double _promoDiscountPercent = 0.0;
 
-  // Initial dummy cart item
-  AppState() {
-    if (MockData.products.isNotEmpty) {
-      final p1 = MockData.products.first;
-      _cartItems.add(
-        CartItem(
-          product: p1,
-          selectedColor: p1.colors.first,
-          selectedSize: p1.sizes.first,
-          quantity: 1,
-        ),
-      );
-    }
-  }
-
   // Getters
+  bool get isAuthenticated => _isAuthenticated;
+  String get currentUserName => _currentUserName ?? 'Guest';
+  String get currentUserEmail => _currentUserEmail ?? '';
+  String get currentUserFirstName => currentUserName.split(' ').first;
   bool get isDarkMode => _isDarkMode;
   String get languageCode => _languageCode;
   String get selectedCategoryId => _selectedCategoryId;
   String get searchQuery => _searchQuery;
+  String get storeName => _storeName;
+  String get storeOwnerName => _storeOwnerName ?? currentUserName;
+  String? get storeImageData => _storeImageData;
   List<CartItem> get cartItems => List.unmodifiable(_cartItems);
   Set<String> get wishlistIds => Set.unmodifiable(_wishlistIds);
   List<OrderModel> get orders => List.unmodifiable(_orders);
+  List<Product> get sellerProducts => List.unmodifiable(_sellerProducts);
+  List<Product> get catalogProducts => [
+    ..._sellerProducts,
+    ...MockData.products,
+  ];
   String? get appliedPromoCode => _appliedPromoCode;
 
   int get cartCount => _cartItems.fold(0, (sum, item) => sum + item.quantity);
@@ -57,7 +64,7 @@ class AppState extends ChangeNotifier {
       (subtotal - discountAmount + shippingFee).clamp(0.0, double.infinity);
 
   List<Product> get filteredProducts {
-    return MockData.products.where((product) {
+    return catalogProducts.where((product) {
       final matchesCategory =
           _selectedCategoryId == 'all' ||
           product.category == _selectedCategoryId;
@@ -73,12 +80,54 @@ class AppState extends ChangeNotifier {
   }
 
   List<Product> get wishlistProducts {
-    return MockData.products
+    return catalogProducts
         .where((product) => _wishlistIds.contains(product.id))
         .toList();
   }
 
   // Actions
+  String? login({required String email, required String password}) {
+    final normalizedEmail = email.trim().toLowerCase();
+    final user = _users[normalizedEmail];
+    if (user == null || user.password != password) {
+      return 'Incorrect email or password.';
+    }
+
+    _currentUserEmail = normalizedEmail;
+    _currentUserName = user.name;
+    _isAuthenticated = true;
+    notifyListeners();
+    return null;
+  }
+
+  String? register({
+    required String name,
+    required String email,
+    required String password,
+  }) {
+    final normalizedEmail = email.trim().toLowerCase();
+    if (_users.containsKey(normalizedEmail)) {
+      return 'An account with this email already exists.';
+    }
+
+    final cleanName = name.trim();
+    _users[normalizedEmail] = (name: cleanName, password: password);
+    _currentUserEmail = normalizedEmail;
+    _currentUserName = cleanName;
+    _isAuthenticated = true;
+    notifyListeners();
+    return null;
+  }
+
+  void signOut() {
+    _isAuthenticated = false;
+    _currentUserEmail = null;
+    _currentUserName = null;
+    _searchQuery = '';
+    _selectedCategoryId = 'all';
+    notifyListeners();
+  }
+
   void toggleTheme() {
     _isDarkMode = !_isDarkMode;
     notifyListeners();
@@ -98,6 +147,105 @@ class AppState extends ChangeNotifier {
 
   void setSearchQuery(String query) {
     _searchQuery = query;
+    notifyListeners();
+  }
+
+  void updateStoreProfile({
+    required String storeName,
+    required String ownerName,
+    required String? imageData,
+  }) {
+    _storeName = storeName.trim();
+    _storeOwnerName = ownerName.trim();
+    _storeImageData = imageData;
+    notifyListeners();
+  }
+
+  void addSellerProduct({
+    required String name,
+    required String category,
+    required double price,
+    required int stock,
+    required String description,
+    required String currencySymbol,
+    required Map<String, double> variantPrices,
+    required Map<String, int> variantStocks,
+    String? imageUrl,
+  }) {
+    final product = Product(
+      id: 'seller-${DateTime.now().microsecondsSinceEpoch}',
+      name: name.trim(),
+      category: category,
+      price: price,
+      originalPrice: price,
+      rating: 0,
+      reviewCount: 0,
+      description: description.trim(),
+      imageUrl: imageUrl?.trim().isNotEmpty == true
+          ? imageUrl!.trim()
+          : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop',
+      colors: const [Colors.black],
+      sizes: category == 'food'
+          ? const ['300ml', '500ml', '1500ml']
+          : const ['Standard'],
+      stock: stock,
+      currencySymbol: currencySymbol,
+      variantPrices: variantPrices,
+      variantStocks: variantStocks,
+    );
+    _sellerProducts.insert(0, product);
+    notifyListeners();
+  }
+
+  void removeSellerProduct(String productId) {
+    _sellerProducts.removeWhere((product) => product.id == productId);
+    _wishlistIds.remove(productId);
+    _cartItems.removeWhere((item) => item.product.id == productId);
+    notifyListeners();
+  }
+
+  void updateSellerProduct({
+    required String productId,
+    required String name,
+    required String category,
+    required double price,
+    required int stock,
+    required String description,
+    required String currencySymbol,
+    required Map<String, double> variantPrices,
+    required Map<String, int> variantStocks,
+    String? imageUrl,
+  }) {
+    final index = _sellerProducts.indexWhere(
+      (product) => product.id == productId,
+    );
+    if (index < 0) return;
+
+    final existing = _sellerProducts[index];
+    _sellerProducts[index] = Product(
+      id: existing.id,
+      name: name.trim(),
+      category: category,
+      price: price,
+      originalPrice: price,
+      rating: existing.rating,
+      reviewCount: existing.reviewCount,
+      description: description.trim(),
+      imageUrl: imageUrl?.trim().isNotEmpty == true
+          ? imageUrl!.trim()
+          : 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop',
+      colors: existing.colors,
+      sizes:
+          category == 'food' &&
+              existing.sizes.length == 1 &&
+              existing.sizes.first == 'Standard'
+          ? const ['300ml', '500ml', '1500ml']
+          : existing.sizes,
+      stock: stock,
+      currencySymbol: currencySymbol,
+      variantPrices: variantPrices,
+      variantStocks: variantStocks,
+    );
     notifyListeners();
   }
 

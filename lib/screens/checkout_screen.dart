@@ -224,7 +224,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                       ),
                       Text(
-                        '${item.quantity} × \$${item.product.price.toStringAsFixed(2)}',
+                        '${item.quantity} × ${item.product.formattedPriceForSize(item.selectedSize)}',
                         style: const TextStyle(color: Colors.grey),
                       ),
                     ],
@@ -409,76 +409,143 @@ class _StepProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const labels = ['Location', 'Payment', 'Invoice'];
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
-      child: Row(
-        children: List.generate(labels.length, (index) {
-          final isComplete = index < currentStep;
-          final isActive = index == currentStep;
-          final color = (isComplete || isActive)
-              ? const Color(0xFF6C5CE7)
-              : const Color(0xFFE2E8F0);
-          return Expanded(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    if (index > 0)
-                      Expanded(
-                        child: Container(
-                          height: 2,
-                          color: index <= currentStep
-                              ? const Color(0xFF6C5CE7)
-                              : const Color(0xFFE2E8F0),
+    const primary = Color(0xFF6C5CE7);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final trackColor = isDark ? Colors.white12 : const Color(0xFFE2E8F0);
+    final progress =
+        currentStep.clamp(0, labels.length - 1) / (labels.length - 1);
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+      padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: isDark ? Colors.white10 : const Color(0xFFF1F2F6),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final stepWidth = constraints.maxWidth / labels.length;
+
+          return Stack(
+            children: [
+              Positioned(
+                top: 16,
+                left: stepWidth / 2,
+                right: stepWidth / 2,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(99),
+                  child: SizedBox(
+                    height: 3,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        ColoredBox(color: trackColor),
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(end: progress),
+                          duration: const Duration(milliseconds: 350),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, child) => Align(
+                            alignment: Alignment.centerLeft,
+                            child: FractionallySizedBox(
+                              widthFactor: value,
+                              child: const ColoredBox(color: primary),
+                            ),
+                          ),
                         ),
-                      ),
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: isComplete
-                            ? const Icon(
-                                Icons.check_rounded,
-                                color: Colors.white,
-                                size: 17,
-                              )
-                            : Text(
-                                '${index + 1}',
-                                style: TextStyle(
-                                  color: isActive ? Colors.white : Colors.grey,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
+                      ],
                     ),
-                    if (index < labels.length - 1)
-                      Expanded(
-                        child: Container(
-                          height: 2,
-                          color: index < currentStep
-                              ? const Color(0xFF6C5CE7)
-                              : const Color(0xFFE2E8F0),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  labels[index],
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-                    color: isActive ? const Color(0xFF6C5CE7) : Colors.grey,
                   ),
                 ),
-              ],
-            ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(labels.length, (index) {
+                  final isComplete = index < currentStep;
+                  final isActive = index == currentStep;
+
+                  return Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          width: 34,
+                          height: 34,
+                          decoration: BoxDecoration(
+                            color: isComplete
+                                ? primary
+                                : (isDark
+                                      ? const Color(0xFF1E293B)
+                                      : Colors.white),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isComplete || isActive
+                                  ? primary
+                                  : trackColor,
+                              width: isActive ? 3 : 2,
+                            ),
+                            boxShadow: isActive
+                                ? [
+                                    BoxShadow(
+                                      color: primary.withValues(alpha: 0.22),
+                                      blurRadius: 9,
+                                      spreadRadius: 2,
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Center(
+                            child: isComplete
+                                ? const Icon(
+                                    Icons.check_rounded,
+                                    color: Colors.white,
+                                    size: 19,
+                                  )
+                                : Text(
+                                    '${index + 1}',
+                                    style: TextStyle(
+                                      color: isActive ? primary : Colors.grey,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          labels[index],
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: isActive
+                                ? FontWeight.w800
+                                : FontWeight.w500,
+                            color: isActive
+                                ? primary
+                                : (isComplete
+                                      ? (isDark
+                                            ? Colors.white70
+                                            : const Color(0xFF475569))
+                                      : Colors.grey),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ],
           );
-        }),
+        },
       ),
     );
   }

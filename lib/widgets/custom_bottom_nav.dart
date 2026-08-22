@@ -20,8 +20,8 @@ class CustomBottomNav extends StatelessWidget {
     final navItems = [
       {'icon': Icons.home_rounded, 'label': 'Home'},
       {'icon': Icons.explore_rounded, 'label': 'Shop'},
-      {'icon': Icons.favorite_rounded, 'label': 'Saved'},
       {'icon': Icons.shopping_bag_rounded, 'label': 'Cart'},
+      {'icon': Icons.favorite_rounded, 'label': 'Saved'},
       {'icon': Icons.person_rounded, 'label': 'Profile'},
     ];
 
@@ -44,7 +44,7 @@ class CustomBottomNav extends StatelessWidget {
         children: List.generate(navItems.length, (index) {
           final isSelected = currentIndex == index;
           final item = navItems[index];
-          final isCart = index == 3;
+          final isCart = index == 2;
 
           return GestureDetector(
             onTap: () => onTap(index),
@@ -67,7 +67,9 @@ class CustomBottomNav extends StatelessWidget {
                         item['icon'] as IconData,
                         color: isSelected
                             ? const Color(0xFF6C5CE7)
-                            : (isDark ? Colors.grey.shade400 : Colors.grey.shade600),
+                            : (isDark
+                                  ? Colors.grey.shade400
+                                  : Colors.grey.shade600),
                         size: 22,
                       ),
                       if (isCart && cartBadgeCount > 0)

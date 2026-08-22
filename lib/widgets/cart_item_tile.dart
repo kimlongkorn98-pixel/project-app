@@ -40,8 +40,8 @@ class CartItemTile extends StatelessWidget {
             child: SizedBox(
               width: 80,
               height: 80,
-              child: Image.network(
-                item.product.imageUrl,
+              child: Image(
+                image: item.product.imageProvider,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
                   color: Colors.grey,
@@ -96,10 +96,7 @@ class CartItemTile extends StatelessWidget {
                     const SizedBox(width: 6),
                     Text(
                       'Size: ${item.selectedSize}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -108,7 +105,7 @@ class CartItemTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '\$${item.totalPrice.toStringAsFixed(2)}',
+                      item.formattedTotalPrice,
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w900,

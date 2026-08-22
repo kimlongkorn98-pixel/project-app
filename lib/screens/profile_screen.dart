@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../providers/app_state.dart';
 import 'order_history_screen.dart';
+import 'seller_store_screen.dart';
 import 'settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -60,9 +61,9 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              const Text(
-                                'Alex Morgan',
-                                style: TextStyle(
+                              Text(
+                                state.currentUserName,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.w900,
@@ -90,9 +91,9 @@ class ProfileScreen extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            'alex.morgan@example.com',
-                            style: TextStyle(
+                          Text(
+                            state.currentUserEmail,
+                            style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 12,
                             ),
@@ -201,6 +202,22 @@ class ProfileScreen extends StatelessWidget {
                     _buildDivider(isDark),
 
                     _buildMenuTile(
+                      icon: Icons.storefront_rounded,
+                      title: state.text('sellerCenter'),
+                      subtitle: state.text('sellerCenterSubtitle'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SellerStoreScreen(state: state),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDivider(isDark),
+
+                    _buildMenuTile(
                       icon: Icons.settings_rounded,
                       title: state.text('profileSettings'),
                       subtitle: 'Display, language, and preferences',
@@ -220,7 +237,7 @@ class ProfileScreen extends StatelessWidget {
 
               // Logout Button
               OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => _confirmSignOut(context),
                 icon: const Icon(
                   Icons.logout_rounded,
                   color: Color(0xFFFF7675),
@@ -245,6 +262,106 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmSignOut(BuildContext context) async {
+    final shouldSignOut = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        final dialogTheme = Theme.of(dialogContext);
+        final isDark = dialogTheme.brightness == Brightness.dark;
+
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 58,
+                    height: 58,
+                    decoration: BoxDecoration(
+                      color: const Color(
+                        0xFFFF7675,
+                      ).withValues(alpha: isDark ? 0.20 : 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.logout_rounded,
+                      color: Color(0xFFFF7675),
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    'Sign out?',
+                    style: dialogTheme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Are you sure you want to sign out? You can sign back in at any time.',
+                    style: dialogTheme.textTheme.bodyMedium?.copyWith(
+                      color: isDark ? Colors.white60 : Colors.black54,
+                      height: 1.45,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 26),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 48,
+                          child: OutlinedButton(
+                            onPressed: () =>
+                                Navigator.pop(dialogContext, false),
+                            style: OutlinedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            child: const Text('Cancel'),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: SizedBox(
+                          height: 48,
+                          child: FilledButton.icon(
+                            onPressed: () => Navigator.pop(dialogContext, true),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFFFF7675),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                            icon: const Icon(Icons.logout_rounded, size: 18),
+                            label: const Text('Sign out'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    if (shouldSignOut == true) state.signOut();
   }
 
   Widget _buildStatItem(String label, String value, VoidCallback onTap) {

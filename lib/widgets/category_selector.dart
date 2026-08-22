@@ -38,24 +38,26 @@ class CategorySelector extends StatelessWidget {
                 color: isSelected
                     ? const Color(0xFF6C5CE7)
                     : (theme.brightness == Brightness.dark
-                        ? const Color(0xFF1E293B)
-                        : Colors.white),
+                          ? const Color(0xFF1E293B)
+                          : Colors.white),
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(
                   color: isSelected
                       ? const Color(0xFF6C5CE7)
                       : (theme.brightness == Brightness.dark
-                          ? const Color(0xFF334155)
-                          : const Color(0xFFE2E8F0)),
+                            ? const Color(0xFF334155)
+                            : const Color(0xFFE2E8F0)),
                   width: 1.5,
                 ),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: const Color(0xFF6C5CE7).withValues(alpha: 0.35),
+                          color: const Color(
+                            0xFF6C5CE7,
+                          ).withValues(alpha: 0.35),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
-                        )
+                        ),
                       ]
                     : [],
               ),
@@ -73,10 +75,11 @@ class CategorySelector extends StatelessWidget {
                       color: isSelected
                           ? Colors.white
                           : (theme.brightness == Brightness.dark
-                              ? Colors.white70
-                              : const Color(0xFF334155)),
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.w600,
+                                ? Colors.white70
+                                : const Color(0xFF334155)),
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w600,
                       fontSize: 13,
                     ),
                   ),

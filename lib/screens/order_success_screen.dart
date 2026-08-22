@@ -76,15 +76,23 @@ class OrderSuccessScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
+                  color: isDark
+                      ? const Color(0xFF1E293B)
+                      : const Color(0xFFF1F5F9),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _buildSummaryInfo(
-                        'Estimated Delivery', 'July 24 - July 26'),
-                    Container(height: 30, width: 1, color: Colors.grey.withValues(alpha: 0.3)),
+                      'Estimated Delivery',
+                      'July 24 - July 26',
+                    ),
+                    Container(
+                      height: 30,
+                      width: 1,
+                      color: Colors.grey.withValues(alpha: 0.3),
+                    ),
                     _buildSummaryInfo('Shipping Method', 'Standard Express'),
                   ],
                 ),
@@ -114,10 +122,7 @@ class OrderSuccessScreen extends StatelessWidget {
   Widget _buildSummaryInfo(String label, String value) {
     return Column(
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11, color: Colors.grey),
-        ),
+        Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
         const SizedBox(height: 4),
         Text(
           value,

@@ -54,13 +54,13 @@ class _MainScreenState extends State<MainScreen> {
         onNavigateToShop: () => setState(() => _currentIndex = 1),
       ),
       DiscoverScreen(state: state),
-      WishlistScreen(
-        state: state,
-        onExplore: () => setState(() => _currentIndex = 1),
-      ),
       CartScreen(
         state: state,
         onShopNow: () => setState(() => _currentIndex = 1),
+      ),
+      WishlistScreen(
+        state: state,
+        onExplore: () => setState(() => _currentIndex = 1),
       ),
       ProfileScreen(state: state),
     ];
